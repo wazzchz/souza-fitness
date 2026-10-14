@@ -42,7 +42,7 @@ export default function CategoryTabs({
           >
             {isActive && (
               <motion.span
-                layoutId="activeCategory"
+                layoutId="categoryIndicator"
                 transition={{ type: "spring", damping: 28, stiffness: 350 }}
                 className="absolute inset-0 rounded-xl border border-crimson-600/60 bg-gradient-to-b from-crimson-600 to-crimson-900 shadow-crimson-glow"
               />

@@ -90,6 +90,7 @@ export default function Hero({ onExplore }: { onExplore: () => void }) {
               alt="Box Crossfit equipado Sousa Fitness"
               className="h-[320px] w-full object-cover md:h-[460px]"
               loading="eager"
+              fetchPriority="high"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-5">

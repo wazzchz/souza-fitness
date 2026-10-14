@@ -15,13 +15,15 @@ import {
   Clock,
   CheckCircle2,
   Award,
+  FileText,
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import CategoryTabs from "@/components/CategoryTabs";
 import EquipmentCard from "@/components/EquipmentCard";
 import QuoteBuilder, { type Selection } from "@/components/QuoteBuilder";
-import { CATALOG, CATEGORIES, type Equipment } from "@/lib/catalog-data";
+import { CATALOG, CATEGORIES, formatBRL, type Equipment } from "@/lib/catalog-data";
+import { estimateTotal } from "@/lib/whatsapp";
 import { sanitizeText, contentViolation } from "@/lib/sanitize";
 
 const fadeUp = {
@@ -95,13 +97,18 @@ export default function HomePage() {
     [category]
   );
 
-  const addToQuote = (equipment: Equipment) => {
+  const quoteUnits = useMemo(() => selections.reduce((a, s) => a + s.qty, 0), [selections]);
+  const quoteTotal = useMemo(() => estimateTotal(selections), [selections]);
+
+  const addToQuote = (equipment: Equipment, qty: number) => {
     setSelections((prev) => {
       const found = prev.find((p) => p.equipment.id === equipment.id);
       if (found) {
-        return prev.map((p) => (p.equipment.id === equipment.id ? { ...p, qty: Math.min(p.qty + 1, 100) } : p));
+        return prev.map((p) =>
+          p.equipment.id === equipment.id ? { ...p, qty: Math.min(p.qty + qty, 100) } : p
+        );
       }
-      return [...prev, { equipment, qty: 1 }];
+      return [...prev, { equipment, qty: Math.max(1, Math.min(qty, 100)) }];
     });
   };
 
@@ -395,6 +402,38 @@ export default function HomePage() {
         </div>
       </footer>
 
+      {/* ── Sticky mobile bottom quote tray ─────────────────── */}
+      <AnimatePresence>
+        {selections.length > 0 && (
+          <motion.div
+            initial={{ y: 80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 80, opacity: 0 }}
+            transition={{ type: "spring", damping: 26, stiffness: 300 }}
+            className="fixed inset-x-0 bottom-0 z-50 border-t border-red-950/60 bg-neutral-950/85 px-4 pb-[calc(0.9rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur-xl md:hidden"
+          >
+            <div className="flex items-center gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-display text-sm font-extrabold text-white">
+                  {quoteUnits} {quoteUnits === 1 ? "item" : "itens"} no orçamento
+                </p>
+                <p className="text-xs text-steel-500">
+                  {quoteTotal != null ? <>Estimativa <strong className="text-red-200">{formatBRL(quoteTotal)}</strong></> : "Toque para revisar e enviar"}
+                </p>
+              </div>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setQuoteOpen(true)}
+                className="btn-crimson btn-pulse !min-h-[48px] shrink-0 !px-5 text-xs"
+              >
+                <FileText className="h-4 w-4" /> Ver Orçamento
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── Floating WhatsApp ───────────────────────────────── */}
       <motion.a
         href="https://wa.me/556391145676"
@@ -406,7 +445,9 @@ export default function HomePage() {
         transition={{ delay: 1.2, type: "spring", damping: 14 }}
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.94 }}
-        className="fixed bottom-5 right-5 z-50 grid h-14 w-14 place-items-center rounded-full bg-gradient-to-b from-crimson-600 to-crimson-900 text-white shadow-crimson-glow"
+        className={`fixed bottom-5 right-5 z-50 grid h-14 w-14 place-items-center rounded-full bg-gradient-to-b from-crimson-600 to-crimson-900 text-white shadow-crimson-glow btn-pulse ${
+          selections.length > 0 ? "translate-y-[-76px] md:translate-y-0" : ""
+        }`}
       >
         <MessageCircle className="h-6 w-6" />
       </motion.a>

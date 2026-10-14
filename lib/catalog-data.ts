@@ -15,10 +15,16 @@ export interface Equipment {
   specs: string[];
   buildBadge: string;
   priceHint: string;
+  /** Numeric unit price in BRL for estimate math. `null` = sob consulta / projeto sob medida. */
+  priceValue: number | null;
   image: string;
   rating: number;
   tag?: "BEST-SELLER" | "HEAVY DUTY" | "NOVO" | "PRO";
   power: string; // e.g. "Suporta 300kg"
+}
+
+export function formatBRL(value: number): string {
+  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 }
 
 export const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "556391145676";
@@ -39,6 +45,7 @@ export const CATALOG: Equipment[] = [
     specs: ["Estrutura alumínio aeronáutico", "5 molas alemãs reguláveis", "Carrinho silent-glide 98cm"],
     buildBadge: "Aço Carbono / Pintura Eletrostática",
     priceHint: "Sob consulta",
+    priceValue: null,
     image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=900&q=80&auto=format&fit=crop",
     rating: 4.9,
     tag: "BEST-SELLER",
@@ -51,6 +58,7 @@ export const CATALOG: Equipment[] = [
     specs: ["Tubos 50x50mm parede 2mm", "Estofado courvin náutico HD", "Kit completo molas + trapézio"],
     buildBadge: "Aço Carbono / Pintura Eletrostática",
     priceHint: "Sob consulta",
+    priceValue: null,
     image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=900&q=80&auto=format&fit=crop",
     rating: 4.8,
     tag: "PRO",
@@ -63,6 +71,7 @@ export const CATALOG: Equipment[] = [
     specs: ["Colunas 80x80mm chapa 3mm", "12 estações + monkey bar", "Pintura black matte + vermelho"],
     buildBadge: "Aço Carbono / Pintura Eletrostática",
     priceHint: "A partir de R$ 18.900",
+    priceValue: 18900,
     image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=900&q=80&auto=format&fit=crop",
     rating: 5.0,
     tag: "HEAVY DUTY",
@@ -75,6 +84,7 @@ export const CATALOG: Equipment[] = [
     specs: ["Compensado naval 20mm", "Faces 50/60/75cm antiderrapantes", "Cantos reforçados em aço"],
     buildBadge: "Aço Carbono / Pintura Eletrostática",
     priceHint: "R$ 890",
+    priceValue: 890,
     image: "https://images.unsplash.com/photo-1517963879433-6ad2b056d712?w=900&q=80&auto=format&fit=crop",
     rating: 4.7,
     power: "Suporta 250kg",
@@ -86,6 +96,7 @@ export const CATALOG: Equipment[] = [
     specs: ["Chassi 100x50mm reforçado", "Rolamentos blindados NSK", "Suporte 480kg anilhas"],
     buildBadge: "Aço Carbono / Pintura Eletrostática",
     priceHint: "A partir de R$ 9.700",
+    priceValue: 9700,
     image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=900&q=80&auto=format&fit=crop",
     rating: 5.0,
     tag: "HEAVY DUTY",
@@ -98,6 +109,7 @@ export const CATALOG: Equipment[] = [
     specs: ["Guias cromadas 30mm", "2 torres 100kg cada", "Polias aeronáuticas blindadas"],
     buildBadge: "Aço Carbono / Pintura Eletrostática",
     priceHint: "A partir de R$ 14.500",
+    priceValue: 14500,
     image: "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=900&q=80&auto=format&fit=crop",
     rating: 4.9,
     tag: "NOVO",
@@ -110,6 +122,7 @@ export const CATALOG: Equipment[] = [
     specs: ["32 máquinas + cardio + peso livre", "Projeto 3D + layout técnico", "Instalação e garantia 5 anos"],
     buildBadge: "Aço Carbono / Pintura Eletrostática",
     priceHint: "Projeto sob medida",
+    priceValue: null,
     image: "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=900&q=80&auto=format&fit=crop",
     rating: 5.0,
     tag: "PRO",
@@ -122,6 +135,7 @@ export const CATALOG: Equipment[] = [
     specs: ["6 reformers + acessórios", "Identidade visual + piso", "Treinamento de equipe incluso"],
     buildBadge: "Aço Carbono / Pintura Eletrostática",
     priceHint: "Projeto sob medida",
+    priceValue: null,
     image: "https://images.unsplash.com/photo-1593079831268-3381b0db4a77?w=900&q=80&auto=format&fit=crop",
     rating: 4.9,
     tag: "NOVO",

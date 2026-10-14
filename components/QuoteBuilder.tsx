@@ -4,7 +4,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { X, Trash2, Minus, Plus, MessageCircle, Send, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import type { Equipment } from "@/lib/catalog-data";
-import { buildWhatsAppUrl, type QuoteItem } from "@/lib/whatsapp";
+import { buildWhatsAppUrl, estimateTotal, type QuoteItem } from "@/lib/whatsapp";
+import { formatBRL } from "@/lib/catalog-data";
 import { sanitizeText } from "@/lib/sanitize";
 
 export interface Selection extends QuoteItem {}
@@ -175,12 +176,21 @@ export default function QuoteBuilder({
             </div>
 
             <div className="space-y-2 border-t border-white/5 p-5">
+              {(() => {
+                const total = estimateTotal(items);
+                return total != null ? (
+                  <div className="flex items-center justify-between rounded-xl border border-red-950/60 bg-crimson-900/20 px-4 py-3">
+                    <span className="text-xs font-bold uppercase tracking-widest text-steel-500">Valor estimado</span>
+                    <span className="font-display text-lg font-extrabold text-white">{formatBRL(total)}</span>
+                  </div>
+                ) : null;
+              })()}
               <motion.button
                 whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
+                whileTap={{ scale: 0.98 }}
                 disabled={items.length === 0 || status === "sending"}
                 onClick={submitServerQuote}
-                className="btn-crimson w-full disabled:opacity-40"
+                className="btn-crimson btn-pulse w-full disabled:opacity-40"
               >
                 {status === "sending" ? "Validando..." : <><Send className="h-4 w-4" /> Validar & Enviar no WhatsApp</>}
               </motion.button>

@@ -17,6 +17,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
           rel="stylesheet"
         />
+        {/* Preload LCP hero image — 0% CLS, instant paint */}
+        <link
+          rel="preload"
+          as="image"
+          href="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200&q=80&auto=format&fit=crop"
+          fetchPriority="high"
+        />
       </head>
       <body className="font-sans min-h-screen bg-pitch text-steel-100 antialiased">
         <div className="pointer-events-none fixed inset-0 z-0">

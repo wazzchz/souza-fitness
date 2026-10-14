@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Star, Plus, MessageCircle, BadgeCheck, Zap } from "lucide-react";
+import { Star, Plus, Minus, MessageCircle, BadgeCheck, Zap } from "lucide-react";
+import { useState } from "react";
 import type { Equipment } from "@/lib/catalog-data";
 import { singleItemWhatsAppUrl } from "@/lib/whatsapp";
 
@@ -19,16 +20,19 @@ export default function EquipmentCard({
 }: {
   equipment: Equipment;
   index: number;
-  onAdd: (e: Equipment) => void;
+  onAdd: (e: Equipment, qty: number) => void;
 }) {
+  const [qty, setQty] = useState(1);
+
   return (
     <motion.article
       layout
-      initial={{ y: 20, opacity: 0 }}
+      initial={{ y: 15, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 12, opacity: 0 }}
       transition={{ duration: 0.5, delay: Math.min(index * 0.06, 0.4), ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
       className="glass group flex flex-col overflow-hidden rounded-3xl shadow-card transition-shadow hover:shadow-crimson-glow"
     >
       <div className="relative h-52 overflow-hidden md:h-60">
@@ -36,6 +40,8 @@ export default function EquipmentCard({
           src={equipment.image}
           alt={equipment.name}
           loading="lazy"
+          width={900}
+          height={600}
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent" />
@@ -49,7 +55,7 @@ export default function EquipmentCard({
         <span className="absolute right-3 top-3 flex items-center gap-1 rounded-full border border-white/15 bg-black/60 px-2.5 py-1 text-xs font-bold text-white backdrop-blur-xl">
           <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" /> {equipment.rating.toFixed(1)}
         </span>
-        <span className="absolute bottom-3 left-3 flex items-center gap-1.5 rounded-full border border-crimson-600/50 bg-black/70 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-red-200 backdrop-blur-xl">
+        <span className="absolute bottom-3 left-3 flex items-center gap-1.5 rounded-full border border-red-950/60 bg-black/70 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-red-200 backdrop-blur-xl">
           <Zap className="h-3 w-3" /> {equipment.power}
         </span>
       </div>
@@ -75,25 +81,47 @@ export default function EquipmentCard({
             <p className="text-[11px] uppercase tracking-widest text-steel-500">Investimento</p>
             <p className="font-display text-base font-extrabold text-white">{equipment.priceHint}</p>
           </div>
-          <button
-            onClick={() => onAdd(equipment)}
-            aria-label={`Adicionar ${equipment.name} ao orçamento`}
-            className="grid h-12 w-12 place-items-center rounded-xl border border-crimson-600/50 bg-crimson-900/30 text-white transition hover:bg-crimson-600"
-          >
-            <Plus className="h-5 w-5" />
-          </button>
+          {/* Quantity counter — 48px touch targets */}
+          <div className="flex items-center gap-1.5" role="group" aria-label={`Quantidade para ${equipment.name}`}>
+            <button
+              onClick={() => setQty((q) => Math.max(1, q - 1))}
+              aria-label="Diminuir quantidade"
+              className="grid h-12 w-12 place-items-center rounded-xl border border-white/10 bg-white/5 text-white transition hover:border-crimson-600/60"
+            >
+              <Minus className="h-4 w-4" />
+            </button>
+            <span aria-live="polite" className="w-7 text-center font-display text-base font-extrabold text-white">{qty}</span>
+            <button
+              onClick={() => setQty((q) => Math.min(99, q + 1))}
+              aria-label="Aumentar quantidade"
+              className="grid h-12 w-12 place-items-center rounded-xl border border-crimson-600/50 bg-crimson-900/30 text-white transition hover:bg-crimson-600"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         <div className="flex gap-2">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => onAdd(equipment, qty)}
+            aria-label={`Adicionar ${qty}x ${equipment.name} ao orçamento`}
+            className="btn-ghost flex-1 !px-3 text-[11px]"
+          >
+            <Plus className="h-4 w-4" /> Adicionar {qty > 1 ? `${qty}x` : ""} ao Orçamento
+          </motion.button>
+        </div>
+        <div className="flex gap-2">
           <motion.a
             whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
-            href={singleItemWhatsAppUrl(equipment)}
+            whileTap={{ scale: 0.98 }}
+            href={singleItemWhatsAppUrl(equipment, qty)}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-crimson flex-1 !px-3 text-[11px]"
+            className="btn-crimson btn-pulse flex-1 !px-3 text-[11px]"
           >
-            <MessageCircle className="h-4 w-4" /> Solicitar Orçamento no WhatsApp
+            <MessageCircle className="h-4 w-4" /> Solicitar Orçamento{qty > 1 ? ` (${qty}x)` : ""}
           </motion.a>
         </div>
       </div>
